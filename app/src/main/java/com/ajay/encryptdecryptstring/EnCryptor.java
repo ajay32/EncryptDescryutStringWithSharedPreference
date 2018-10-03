@@ -6,10 +6,11 @@ import android.security.KeyPairGeneratorSpec;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.support.annotation.NonNull;
+import android.util.Base64;
 import android.util.Log;
-
 import java.io.IOException;
 import java.math.BigInteger;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyPairGenerator;
@@ -32,9 +33,6 @@ import javax.security.auth.x500.X500Principal;
 class EnCryptor {
 
     private static final String TRANSFORMATION = "AES/GCM/NoPadding";
- //  private static final String TRANSFORMATION = "RSA/ECB/NoPadding";
-//   private static final String TRANSFORMATION = "RSA/ECB/PKCS1Padding";
-
     private static final String ANDROID_KEY_STORE = "AndroidKeyStore";
 
     private byte[] encryption;
@@ -59,6 +57,9 @@ class EnCryptor {
 
         iv = cipher.getIV();
 
+
+
+
         return (encryption = cipher.doFinal(textToEncrypt.getBytes("UTF-8")));
     }
 
@@ -66,7 +67,7 @@ class EnCryptor {
     private SecretKey getSecretKey(final String alias) throws NoSuchAlgorithmException,
             NoSuchProviderException, InvalidAlgorithmParameterException {
 
-        KeyGenerator keyGenerator;
+        KeyGenerator keyGenerator = null;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
@@ -78,22 +79,6 @@ class EnCryptor {
                     .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                     .build());
-
-
-        } else {
-
-              keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, ANDROID_KEY_STORE);
-            keyGenerator.init(512 , new SecureRandom());
-
-          /*  KeyGenerator keyGenerator = KeyGenerator
-                    .getInstance(TRANSFORMATION, ANDROID_KEY_STORE);
-
-
-            // use the supported init method here such as this one
-       //    keyGenerator.init(size, secureRandom);
-           keyGenerator.init(512, new SecureRandom());*/
-
-
 
         }
 
